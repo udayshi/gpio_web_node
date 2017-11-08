@@ -1,0 +1,112 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Device Manager</title>
+
+<style>
+
+* {
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+
+.container {
+    max-width: 350px;
+    margin:0 auto;
+}
+.jumbotron{
+    text-align: center;
+    background: #f1f1f1;
+    padding: 10px;
+}
+.btn-success {
+    color: #fff;
+    background-color: #5cb85c;
+    border-color: #4cae4c;
+}
+
+.btn-danger {
+    color: #fff;
+    background-color: #d9534f;
+    border-color: #d43f3a;
+}
+.btn {
+    display: inline-block;
+    padding: 6px 12px;
+    margin-bottom: 0;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-image: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+
+button{
+min-width:200px;
+}
+li{
+list-style:none;
+padding:0px;
+padding-bottom:20px;
+
+}
+ul{
+padding:0px;
+margin-top:25px;
+}
+</style>
+
+</head>
+<body class="container">
+
+<header>
+</header>
+
+<main>
+    <div class="jumbotron" >
+        <h3>Available Devices</h3>
+<ul>
+    <% devices.forEach(function(device,i) { %>
+        <li><button type="button" data-id="<%=device.id %>" class="btn btn-<%=device.status=='ON'?'success':'danger'%>"><%= i+1 %> - <%= device.name %>  </button></li>
+    <% }); %>
+</ul>
+	<footer>
+		<p class="text-center text-muted">© Copyright usforweb.com</p>
+	</footer>
+    </div>
+</main>
+
+<script src="<%=jq_lib%>"></script>
+<script>
+jQuery(document).ready(function(){
+	jQuery('li button').on('click',function(e){
+	var which_pin=jQuery(e.target).data('id');
+	jQuery(e.target).attr('disabled','disabled');
+	jQuery.get(which_pin,function(data){
+		jQuery(e.target).show();
+		jQuery(e.target).removeClass('btn-success');
+		jQuery(e.target).removeClass('btn-danger');
+		if(data.trim() == 'ON')
+			jQuery(e.target).addClass('btn-success');
+		else
+			jQuery(e.target).addClass('btn-danger');
+		jQuery(e.target).removeAttr('disabled');
+	
+	});
+});
+});
+</script>
+</body>
+</html>
