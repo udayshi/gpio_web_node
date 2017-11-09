@@ -7,30 +7,17 @@
 <title>Device Manager</title>
 
 <style>
-
-* {
+*{
     font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
 }
-
 .container {
     max-width: 350px;
     margin:0 auto;
 }
-.jumbotron{
+.shell{
     text-align: center;
     background: #f1f1f1;
     padding: 10px;
-}
-.btn-success {
-    color: #fff;
-    background-color: #5cb85c;
-    border-color: #4cae4c;
-}
-
-.btn-danger {
-    color: #fff;
-    background-color: #d9534f;
-    border-color: #d43f3a;
 }
 .btn {
     display: inline-block;
@@ -43,29 +30,32 @@
     white-space: nowrap;
     vertical-align: middle;
     cursor: pointer;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
     user-select: none;
     background-image: none;
     border: 1px solid transparent;
     border-radius: 4px;
+    min-width:200px;
 }
-
-
-button{
-min-width:200px;
+.btn-on {
+    color: #fff;
+    background-color: #5cb85c;
+    border-color: #4cae4c;
 }
-li{
-list-style:none;
-padding:0px;
-padding-bottom:20px;
-
+.btn-off {
+    color: #fff;
+    background-color: #d9534f;
+    border-color: #d43f3a;
 }
 ul{
-padding:0px;
-margin-top:25px;
+    padding:0px;
+    margin-top:25px;
 }
+li{
+    list-style:none;
+    padding:0px;
+    padding-bottom:20px;
+}
+
 </style>
 
 </head>
@@ -75,38 +65,44 @@ margin-top:25px;
 </header>
 
 <main>
-    <div class="jumbotron" >
+    <div class="shell" >
         <h3>Available Devices</h3>
 <ul>
     <% devices.forEach(function(device,i) { %>
-        <li><button type="button" data-id="<%=device.id %>" class="btn btn-<%=device.status=='ON'?'success':'danger'%>"><%= i+1 %> - <%= device.name %>  </button></li>
+        <li><button type="button" onClick="toggleGPIO(this,<%=device.id %>)" class="btn btn-<%=device.status=='ON'?'on':'off'%>"><%= i+1 %> - <%= device.name %>  </button></li>
     <% }); %>
 </ul>
 	<footer>
-		<p class="text-center text-muted">© Copyright usforweb.com</p>
+		<p>© Copyright usforweb.com</p>
 	</footer>
     </div>
 </main>
 
-<script src="<%=jq_lib%>"></script>
 <script>
-jQuery(document).ready(function(){
-	jQuery('li button').on('click',function(e){
-	var which_pin=jQuery(e.target).data('id');
-	jQuery(e.target).attr('disabled','disabled');
-	jQuery.get(which_pin,function(data){
-		jQuery(e.target).show();
-		jQuery(e.target).removeClass('btn-success');
-		jQuery(e.target).removeClass('btn-danger');
-		if(data.trim() == 'ON')
-			jQuery(e.target).addClass('btn-success');
-		else
-			jQuery(e.target).addClass('btn-danger');
-		jQuery(e.target).removeAttr('disabled');
-	
-	});
-});
-});
+function callAjax(url, callback){
+    var xmlhttp;
+    // compatible with IE7+, Firefox, Chrome, Opera, Safari
+    xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = function(){
+        if (xmlhttp.readyState == 4 && xmlhttp.status == 200){
+            callback(xmlhttp.responseText);
+        }
+    }
+    xmlhttp.open("GET", url, true);
+    xmlhttp.send();
+}
+function toggleGPIO(e,id){
+    e.disabled=true;
+    callAjax(id,function(data){
+        var status=data.trim();
+        if(status=='ON'){
+            e.className='btn btn-on';
+        }else{
+            e.className='btn btn-off';
+        }
+        e.disabled=false;
+    });
+}
 </script>
 </body>
 </html>
